@@ -1,4 +1,4 @@
-#include <stdio.h>
+/*#include <stdio.h>
 
 #include "check_tree.h"
 
@@ -12,13 +12,14 @@ static Errors fill_input_file (const char *const  input_file_name, const char *c
 
 static Errors do_graph_cmd (const char *const input_file_name, const char *const output_file_name);
 
+
 void print (const Node* const node)
 {
     if (!node)
         return;
 
     printf("(");
-    printf("%d", node->data);
+    printf("%s", node->str);
     if (node->Left)
         print(node->Left);
 
@@ -43,7 +44,7 @@ Errors graph_dump (const Node *const node, const Node *const definite_node)  //�
     char input_file_data[INPUT_FILE_SIZE] = {};
 
     sprintf(input_file_data, "%sdigraph G\n{\n\tnode [shape = Mrecord; fillcolor = \"#9FDFDA\";];\n",\
-     input_file_data);
+    input_file_data);
 
     make_nodes (node, definite_node, input_file_data);
 
@@ -86,15 +87,14 @@ void make_file_names (char *const input_file_name, char *const output_file_name,
 //make_nudes
 void make_nodes (const Node *const node, const Node *const definite_node, char *const input_file_data)  //заполнение узлов
 {
-    printf("here\n");
     assert (node);
     assert (input_file_data);
 
     if (!node)
         return;
 
-    char  left[MAX_STR_LEN] =  "Left";
-    char right[MAX_STR_LEN] = "Right";
+    char  left[MAX_STR_LEN] = "Yes";  //константы
+    char right[MAX_STR_LEN] =  "No";
 
     if (!node->Left)
         strncpy(left, "0", MAX_STR_LEN);
@@ -102,15 +102,12 @@ void make_nodes (const Node *const node, const Node *const definite_node, char *
     if (!node->Right)
         strncpy(right, "0", MAX_STR_LEN);
 
-    printf("%s\n", left);
-    printf("%s\n", right);
-
-    if(node == definite_node)
-        sprintf(input_file_data, "%s\tnode%p [style = filled; fillcolor = \"#E64F72\"; label = \"{<f0> data = %d  |{<f1> %s | <f2> %s}} \"];\n",\
-        input_file_data, node, node->data, left, right);
+    if(node == definite_node)  //сделать функцию поиска по адресу
+        sprintf(input_file_data, "%s\tnode%p [style = filled; fillcolor = \"#E64F72\"; label = \"{<f0> %s  |{<f1> %s | <f2> %s}} \"];\n",\
+        input_file_data, node, node->str, left, right);
     else
-        sprintf(input_file_data, "%s\tnode%p [style = filled; fillcolor = \"#9FDFDA\"; label = \"{<f0> data = %d  |{<f1> %s | <f2> %s}} \"];\n",\
-        input_file_data, node, node->data, left, right);
+        sprintf(input_file_data, "%s\tnode%p [style = filled; fillcolor = \"#9FDFDA\"; label = \"{<f0> %s  |{<f1> %s | <f2> %s}} \"];\n",\
+        input_file_data, node, node->str, left, right);
 
     if (node->Left)
         make_nodes (node->Left, definite_node, input_file_data);
@@ -157,10 +154,10 @@ Errors fill_input_file (const char *const  input_file_name, const char *const in
     input_file = fopen(input_file_name, "w");
     FILE_CHECK(input_file)
 
-    if (fwrite(input_file_data, sizeof(char), INPUT_FILE_SIZE, input_file) == false)
+    if (!fwrite(input_file_data, sizeof(char), INPUT_FILE_SIZE, input_file))
         return WRITE_ERROR;
 
-    if (fclose(input_file))
+    if (fclose(input_file) != 0)
         return  CLOSE_ERROR;
 
     return ALL_RIGHT;
@@ -178,4 +175,4 @@ Errors do_graph_cmd (const char *const input_file_name, const char *const output
         return CMD_ERROR;
 
     return ALL_RIGHT;
-}
+}*/
