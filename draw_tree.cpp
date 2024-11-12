@@ -1,7 +1,6 @@
-/*#include <stdio.h>
+#include <stdio.h>
 
-#include "check_tree.h"
-
+#include "draw_tree.h"
 
 static void make_file_names (char *const input_file_name, char *const output_file_name, size_t enter_cnt);
 
@@ -175,4 +174,4 @@ Errors do_graph_cmd (const char *const input_file_name, const char *const output
         return CMD_ERROR;
 
     return ALL_RIGHT;
-}*/
+}

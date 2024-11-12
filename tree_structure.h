@@ -1,14 +1,9 @@
-#ifndef _TREE_H_
-#define _TREE_H_
+#ifndef _STRUCTURE_H_
+#define _STRUCTURE_H_
 
 #include "base_handle.h"
 
-static const size_t START_STRS_AMT = 50;
-
-
-static const size_t MAX_STR_LEN = 50;
 static const size_t ONE_NODE    =  1;
-static const size_t START_SIZE  = 60;  //зачем он был нужен?
 
 struct Node 
 {
@@ -16,21 +11,24 @@ struct Node
 
     Node* Right;
     Node* Left;
+
+    bool is_filled;
 };
 
 struct Tree //структура дерева с корневым узлом
 {
     char** database_str;
-    int* string_inds;
+    size_t node_amt;
 
-    Node start_node;  //вот и вопрос. узел лучше, наверное, заранее инициализировать
+    Node* start_node;  //вот и вопрос. узел лучше, наверное, заранее инициализировать
 };
 
 
-Node* create_node (char *const str);
+Errors node_ctor (Node *const node);
+Errors tree_ctor (Tree *const the_tree, Node *const start_node);
 
-void insert_node (Node *const node);
+Node* create_node (char* str);
 
-void free (Node* node);
+void tree_dtor(Tree* the_tree);
 
-#endif //_TREE_H_
+#endif //_STRUCTURE_H_

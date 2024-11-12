@@ -2,90 +2,47 @@
 
 #include "tree_structure.h"
 
-Errors create_node (Node *const node) //так как это служебная функция, надо, чтобы она возвращалв эррорс
+Errors node_ctor (Node *const node)
 {
     assert(node);
-    Errors error = ALL_RIGHT;
 
+    char* str = (char*)calloc(MAX_STR_LEN, sizeof(char));
+    ALLOCATION_CHECK (str)
+
+    node->str = str;  //дает место для записи строки
+
+    node->is_filled = false;  //показывает программе, что идти не надо, там уже все значения заняты
+
+    return ALL_RIGHT;
+}
+
+Errors tree_ctor (Tree *const the_tree, Node *const start_node)
+{
+    printf("HERE\n");
+    assert(the_tree);
+
+    char** strs = (char**)calloc(MAX_STRS_AMT, sizeof(char*));
+    ALLOCATION_CHECK(strs)
+
+    the_tree->database_str = strs;
+    the_tree->start_node = start_node;
+    //printf("address in tree %p\n", start_node);
+
+    return ALL_RIGHT;
+}
+
+Node* create_node (char* str)
+{
     Node* new_node = (Node*)calloc(ONE_NODE, sizeof(Node));
-    ALLOCATION_CHECK (new_node)
-
-    new_node->data = value;
+    //сюда бы проверку, но возвращаемое значение не подходит
+    new_node->str = str;
 
     return new_node;
 }
 
 
-Errors tree_ctor (Tree *const the_tree)  //не очень хорошо, что будет типа обязательный параметр с структурой базы дерева. Можно сделать отдельно ситор с выделением "многа" памяти и отдельную функцию на заполнение определенной информацией
+void tree_dtor(Tree* the_tree)
 {
-    assert(the_tree);
-
-    char** strs = (char**)calloc(START_STRS_AMT, sizeof(char*));
-    ALLOCATION_CHECK(strs)
-
-    int* inds = (int*)calloc(START_STRS_AMT, sizeof(int));
-    ALLOCATION_CHECK(inds)
-
-
+    free(the_tree->database_str);
+    free(the_tree->start_node);
 }
-
-Errors database_tree_fill(Tree *const the_tree, const Input *const base_text)
-{
-    assert(the_tree );
-    assert(base_text);
-}
-
-
-
-/*Node* make_base_tree(Input* base_text, Tree* the_tree)  //функцию получения имени как аргумента ком строки можно взять из проуессора
-{
-    assert(base_text);
-    assert(the_tree);
-    //сначала сделать массив строк из ткх, что заключены в "", так как там есть четкая последовательность заполнения базы, можно брать строки и все.
-    //можно сделать ошибку - проверку глубины дерева. Если она не будет совпадать с максимальным колвом табов, что выдать трабл.
-    //проблема в том, что сканф прокускает табы и тд
-
-    Node start_node = //теперь будет разделение на основе вопросительных знаков. Право лево определается последовательностью, а конец ветки - отсутствием вопр знака
-
-}
-
-
-
-void insert_node (Node *const node)  //формирует дерево по базе
-{
-    assert (node);
-
-    if (value < node->data)
-    {
-        if(node->Left)
-            insert_node (node->Left, value);
-        else
-            node->Left = create_node (value);
-    } 
-    else
-    {
-        if(node->Right)
-            insert_node (node->Right, value);
-        else
-            node->Right = create_node (value);
-    }
-}
-
-void free (Node* node)  //переименовать
-{
-    free(node);
-}
-
-/*Node* create_node (char *const str)
-{
-    assert(str);
-
-    //Errors error = ALL_RIGHT;
-
-    //Node* new_node = (Node*)calloc(ONE_NODE, sizeof(Node));
-    //ALLOCATION_CHECK (new_node)
-
-    //strncpy(new_node->str, str, MAX_STR_LEN);  //проверка
-
-    //return new_node;
-}*/
