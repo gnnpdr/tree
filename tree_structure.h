@@ -15,9 +15,15 @@ struct Node
     bool is_filled;
 };
 
+struct NodeParameters 
+{
+    char* str;
+    Node* node_address; 
+};
+
 struct Tree //структура дерева с корневым узлом
 {
-    char** database_str;
+    NodeParameters database_strs[MAX_STRS_AMT];
     size_t node_amt;
 
     Node* start_node;  //вот и вопрос. узел лучше, наверное, заранее инициализировать

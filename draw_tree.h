@@ -5,6 +5,9 @@
 
 static const size_t INPUT_FILE_SIZE = 5000;
 
+static const char* YES = "Yes";
+static const char* NO = "No";
+
 void print (const Node* const node);
 Errors graph_dump (const Node *const node, const Node *const definite_node);
 

@@ -79,8 +79,6 @@ Errors handle_text (Input* base_text)
     size_t symb_amt = 0;
     char address[MAX_STR_LEN] = {};  //временная строка для получения длины 
 
-    printf("text address %p, %p\n", text, base_text->text);
-
     while(word_num < word_amt)
     {
         sscanf(text + symb_amt, "%[^\"]", address);  //считывает до кавычки

@@ -92,14 +92,14 @@ void make_nodes (const Node *const node, const Node *const definite_node, char *
     if (!node)
         return;
 
-    char  left[MAX_STR_LEN] = "Yes";  //константы
-    char right[MAX_STR_LEN] =  "No";
+    const char*  left = NO;
+    const char* right = YES;
 
-    if (!node->Left)
+    /*if (!node->Left)
         strncpy(left, "0", MAX_STR_LEN);
 
     if (!node->Right)
-        strncpy(right, "0", MAX_STR_LEN);
+        strncpy(right, "0", MAX_STR_LEN);*/
 
     if(node == definite_node)  //сделать функцию поиска по адресу
         sprintf(input_file_data, "%s\tnode%p [style = filled; fillcolor = \"#E64F72\"; label = \"{<f0> %s  |{<f1> %s | <f2> %s}} \"];\n",\

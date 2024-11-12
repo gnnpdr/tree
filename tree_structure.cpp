@@ -18,15 +18,13 @@ Errors node_ctor (Node *const node)
 
 Errors tree_ctor (Tree *const the_tree, Node *const start_node)
 {
-    printf("HERE\n");
     assert(the_tree);
 
-    char** strs = (char**)calloc(MAX_STRS_AMT, sizeof(char*));
-    ALLOCATION_CHECK(strs)
+    //char** strs = (char**)calloc(MAX_STRS_AMT, sizeof(char*));
+    //ALLOCATION_CHECK(strs)
 
-    the_tree->database_str = strs;
+    //the_tree->database_str = strs;
     the_tree->start_node = start_node;
-    //printf("address in tree %p\n", start_node);
 
     return ALL_RIGHT;
 }
@@ -43,6 +41,6 @@ Node* create_node (char* str)
 
 void tree_dtor(Tree* the_tree)
 {
-    free(the_tree->database_str);
+    //free(the_tree->database_str);
     free(the_tree->start_node);
 }
