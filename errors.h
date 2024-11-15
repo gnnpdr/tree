@@ -1,26 +1,7 @@
-#ifndef _BASE_H_
-#define _BASE_H_ 
+#ifndef _ERRORS_H_
+#define _ERRORS_H_
 
-#include <assert.h>
-#include <string.h>
-#include <stdlib.h>
-#include <sys/stat.h>
-
-static const char QUOT_MARK = '"';
-static const size_t MAX_STRS_AMT = 50;
-static const size_t MAX_STR_LEN = 50;
-
-struct Input 
-{
-    char* name;
-    char* text;
-    size_t size;
-
-    char* strs[MAX_STRS_AMT];
-    size_t node_amt;
-};
-
-enum Errors
+enum Errors  //отдельный файл
 {
     ALL_RIGHT,
     FILE_ERROR,
@@ -28,7 +9,9 @@ enum Errors
     WRITE_ERROR,
     CLOSE_ERROR,
     CMD_ERROR,
-    ALLOCATION_ERROR
+    ALLOCATION_ERROR,
+    CPY_ERROR,
+    STAT_ERROR
 };
 
 #define FILE_CHECK(file)    do                                      \
@@ -49,9 +32,4 @@ enum Errors
                                 }                                   \
                             }while(0);
 
-Errors get_name(Input *const base_text, char **const argv);
-Errors get_file_text (Input *const base_text);
-Errors handle_text (Input* base_text);
-void input_dtor(Input* base_text);
-
-#endif //_BASE_H_
+#endif //_ERRORS_H_

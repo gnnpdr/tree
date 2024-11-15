@@ -11,7 +11,7 @@ Errors node_ctor (Node *const node)
 
     node->str = str;  //дает место для записи строки
 
-    node->is_filled = false;  //показывает программе, что идти не надо, там уже все значения заняты
+    //node->is_filled = false;  //показывает программе, что идти не надо, там уже все значения заняты
 
     return ALL_RIGHT;
 }
@@ -29,7 +29,7 @@ Errors tree_ctor (Tree *const the_tree, Node *const start_node)
     return ALL_RIGHT;
 }
 
-Node* create_node (char* str)
+Node* make_node (char* str)
 {
     Node* new_node = (Node*)calloc(ONE_NODE, sizeof(Node));
     //сюда бы проверку, но возвращаемое значение не подходит

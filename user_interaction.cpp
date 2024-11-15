@@ -13,10 +13,10 @@ void guessing (Tree *const the_tree)
     for (size_t i = 0; i < the_tree->node_amt; i++)
         strs[i] = the_tree->database_strs[i].str;
 
-    char ans_str[MAX_STR_LEN] = {};
-    char new_str[MAX_STR_LEN] = {};
+    char* ans_str = (char*)calloc(MAX_STR_LEN, sizeof(char));
+    char* new_str = (char*)calloc(MAX_STR_LEN, sizeof(char));
 
-    char diff[MAX_STR_LEN] = {};
+    char* diff = (char*)calloc(MAX_STR_LEN, sizeof(char));
 
     bool is_question = true;
     Node* guess_node = the_tree->start_node;
@@ -41,7 +41,7 @@ void guessing (Tree *const the_tree)
         size_t free_place = the_tree->node_amt;
 
         guess_node->Left = create_node(guess_node->str);
-        the_tree->database_strs[free_place].str = guess_node->str;
+        the_tree->database_strs[free_place].str = guess_node->str; 
         the_tree->database_strs[free_place].node_address = guess_node->Left;
 
         printf("what did you mean then?? I ll memorize it\n");
@@ -66,6 +66,10 @@ void guessing (Tree *const the_tree)
         the_tree->node_amt += 2;
     }
 
+
+    free(new_str);
+    free(ans_str);
+    free(diff);
     free(strs);
 }
 
@@ -94,6 +98,8 @@ Node* find_node (const char *const str, Tree* the_tree)
         if (strncmp(str, the_tree->database_strs[node_cnt].str, MAX_STR_LEN)== 0)
             return the_tree->database_strs[node_cnt].node_address;
     }
+
+    
 
     return nullptr;
 }

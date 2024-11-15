@@ -1,6 +1,7 @@
 #ifndef _DRAW_H_
 #define _DRAW_H_
 
+
 #include "tree_structure.h"
 
 static const size_t INPUT_FILE_SIZE = 5000;

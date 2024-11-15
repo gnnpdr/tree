@@ -70,11 +70,11 @@ void make_file_names (char *const input_file_name, char *const output_file_name,
 
     static char name_base[MAX_STR_LEN] = "";
 
-    if (enter_cnt == 0)
+    /*if (enter_cnt == 0)
     {
         printf("enter name of input dot file (please)\n");
         scanf("%s", name_base);
-    }
+    }*/
         
     strncpy(output_file_name, input_file_name, MAX_STR_LEN);
 
