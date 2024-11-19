@@ -1,192 +1,291 @@
-/*#include <stdio.h>
+#include <stdio.h>
 
 #include "tree_functions.h"
 
-static size_t* find_way (char** strs, char* str, size_t* node_amt);
-
-Node* insert_node (Node *const node, char* str)
-{
-    assert (node);
-
-    Node* temp_node = {};
-
-    bool is_str_question = find_question_mark(str);
-    bool is_left_node_question = false;
-    if (node->Left)
-        is_left_node_question = find_question_mark(node->Left->str);
-    
-        
-    if (node->Left)
-    {
-        if(!is_left_node_question)
-        {
-            node->is_filled = true;
-            temp_node = create_node(str);
-            node->Right = temp_node;
-            return temp_node;
-        }
-
-        if(!node->Left->is_filled)
-            temp_node = insert_node(node->Left, str);
-        
-        else
-        {
-            if (!is_str_question)
-                node->is_filled = true;
-
-            if (!node->Right)
-            {   
-                temp_node = create_node(str);
-                node->Right = temp_node;
-            }
-            else
-                temp_node = insert_node(node->Right, str);
-        }
-    }
-    else
-    {
-        temp_node = create_node(str);
-        node->Left = temp_node;   
-    }
-    return temp_node;
-}
+static bool find_path(Node *const node, bool* path, char* str, int* path_cnt);
+static char* make_def_str(char* definition, bool* path, int path_cnt, Node* node, size_t num);
+static char* make_dif_str(char* difference, bool* first_path, bool* sec_path, Node* node, int num, int path_cnt, int start_dif);
+static size_t find_dif_num(bool* first_path, bool* sec_path, int min_path_cnt);
 
 
-void make_base_tree (Tree* the_tree)
+void make_definition (Tree* the_tree)
 {
     assert(the_tree);
 
-    size_t node_amt = the_tree->node_amt;
+    printf("what word do you want to define?\n");
+    
+    char ans_str[MAX_STR_LEN] = {};
+    fgets(ans_str, MAX_STR_LEN, stdin);
 
-    char** strs = (char**)calloc(node_amt, sizeof(char*));
-    for (size_t i = 0; i < the_tree->node_amt; i++)
-        strs[i] = the_tree->database_strs[i].str;
+    bool path[MAX_STRS_AMT] = {};
+    int path_cnt = 0;  //инт, а не сайз т, чтобы была проверка на отсутствие слова в дереве.
+    find_path(the_tree->start_node, path, ans_str, &path_cnt);
 
-    the_tree->start_node->str = strs[0];
-    the_tree->database_strs[0].node_address = the_tree->start_node;
-
-    for(size_t str_ind = 1; str_ind < node_amt; str_ind++)
+    if (path_cnt < 0)
     {
-        Node* definite_node = insert_node(the_tree->start_node, strs[str_ind]);
-        the_tree->database_strs[str_ind].node_address = definite_node;
-
-        graph_dump (the_tree->start_node, definite_node);
+        printf("there is no such word\n");
+        return;
     }
-
-    free(strs);
+        
+    char definition[MAX_STR_LEN] = {};
+    size_t num = 0;
+    make_def_str(definition, path, path_cnt, the_tree->start_node, num);
+    printf("definition %s\n", definition);
 }
 
-bool find_question_mark(char* str)
+bool find_path(Node *const node, bool* path, char* str, int* path_cnt)
 {
-    assert(str);
+    assert(node);
+    assert(path);
 
-    if (str[strlen(str) - 1] == QUESTION_MARK)
+    /*printf("-----------------------------------\n");
+    for (int i = 0; i < *path_cnt; i++)
+        printf("%d ", path[i]);
+
+    printf("\n");*/
+
+    bool this_way = true;
+
+    if(node->Left == nullptr && node->Right == nullptr)
+    {
+        size_t cmp_res = strncmp(str, node->str, strlen(node->str));
+        if (cmp_res != 0)
+        {
+            (*path_cnt)--;
+            return false;
+        }
+        else
+            return true;
+    }
+    
+    if (node->Left)
+    {
+        path[*path_cnt] = false;
+        
+        (*path_cnt)++;
+        
+        this_way = find_path(node->Left, path, str, path_cnt);
+    }
+    if (this_way)
         return true;
-    else
-        return false;
-}
 
-
-void database_tree_fill(Tree *const the_tree, const Input *const base_text)
-{
-    assert(the_tree );
-    assert(base_text);
-
-    size_t node_amt = base_text->node_amt;
-    char** strs = (char**)calloc(node_amt, sizeof(char*));
-    
-    for (size_t i = 0; i < node_amt; i++)
-        strs[i] = base_text->strs[i];
-
-    for (size_t str_ind = 0; str_ind < node_amt; str_ind++)
-        the_tree->database_strs[str_ind].str = strs[str_ind];
-
-    the_tree->node_amt = base_text->node_amt;
-
-    make_base_tree(the_tree);
-}
-
-
-char* make_definition (Tree* the_tree)
-{
-    assert(the_tree);
-    
-    printf("what word?\n");
-
-    char* str = (char*)calloc(MAX_STR_LEN, sizeof(char));  //не динамическая память
-    scanf("%s", str);  //отдельно в user 
-
-    size_t steps_amt = the_tree->node_amt;
-
-    char** strs = (char**)calloc(steps_amt, sizeof(char*));
-    for (size_t i = 0; i < the_tree->node_amt; i++)
-        strs[i] = the_tree->database_strs[i].str;
-
-    size_t* path = find_way(strs, str, &steps_amt);
-
-    char* definition = (char*)calloc(MAX_STR_LEN, sizeof(char));
-    sprintf(definition, "%s it is ", str);
-    
-    for (size_t str_num = 0; str_num < steps_amt - 1; str_num++)  //-1 так как путь включает в себя сасо слово, нам это не нужно
+    if (node->Right)
     {
-        if (path[str_num + 1] % 2 == 1)
-            sprintf(definition, "%snot", definition);
-
-        str = strs[path[str_num]];
-        str[strlen(str) - 1] = ' ';
-        
-        sprintf(definition, "%s%s", definition, str);
-    }
-
-    printf("here it is\n");
-    printf("%s\n", definition);
-
-    free(path);
-    free(definition);
-    free(strs);
-}
-
-size_t* find_way (char** strs, char* str, size_t* node_amt)
-{
-    Ways way_type = FREE;
-    size_t* path = (size_t*)calloc(*node_amt, sizeof(size_t));
-    size_t step = 0;
-
-
-    for (size_t str_num = 0; str_num < *node_amt; str_num++)
-    {
-        bool is_question = find_question_mark(strs[str_num]);
-        if (is_question)
+        path[*path_cnt] = true;
+        (*path_cnt)++;
+        this_way = find_path(node->Right, path, str, path_cnt);
+        if (!this_way)
         {
-            path[step] = str_num;
-            step++;
+            path[*path_cnt] = false;
+            (*path_cnt)--;
         }
         else
+            return true;
+    }
+
+    return false;
+}
+
+char* make_def_str(char* definition, bool* path, int path_cnt, Node* node, size_t num)
+{
+    if ((int)num == path_cnt)
+        return definition;
+
+    char str[MAX_STR_LEN] = {};
+    strncpy(str, node->str, strlen(node->str) - 1);
+
+    if(path[num])
+    {
+        sprintf(definition, "%s %s", definition, str);
+        num++;
+        make_def_str(definition, path, path_cnt, node->Right, num);
+    }
+    else
+    {
+        sprintf(definition, "%s not %s", definition, str);
+        num++;
+        make_def_str(definition, path, path_cnt, node->Left, num);
+    }
+
+    return definition;
+}
+
+void find_difference(Tree* the_tree)
+{
+    assert(the_tree);
+
+    printf("which words do you want to compare?\n");
+    printf("Enter first\n");
+    char first_word[MAX_STR_LEN] = {};
+    fgets(first_word, MAX_STR_LEN, stdin);
+
+    printf("Yep. Enter second\n");
+    char sec_word[MAX_STR_LEN] = {};
+    fgets(sec_word, MAX_STR_LEN, stdin);
+
+    int cmp_res = strncmp(first_word, sec_word, MAX_STR_LEN);
+    if (cmp_res == 0)
+    {
+        printf("this is one word!\n");
+        return;
+    }
+        
+    bool first_path[MAX_STR_LEN] = {};
+    int first_path_cnt = 0;  //инт, а не сайз т, чтобы была проверка на отсутствие слова в дереве.
+    find_path(the_tree->start_node, first_path, first_word, &first_path_cnt);
+
+    if (first_path_cnt < 0)
+    {
+        printf("there is no such word\n");
+        return;
+    }
+
+    printf("first word\n");
+    for (int i = 0; i < first_path_cnt; i++)
+        printf("%d ", first_path[i]);
+
+    printf("\n");
+
+    bool sec_path[MAX_STR_LEN] = {};
+    int sec_path_cnt = 0;  //инт, а не сайз т, чтобы была проверка на отсутствие слова в дереве.
+    find_path(the_tree->start_node, sec_path, sec_word, &sec_path_cnt);
+
+    if (sec_path_cnt < 0)
+    {
+        printf("there is no such word\n");
+        return;
+    }
+
+    int num = 0;
+
+    int max_path_cnt = 0;
+    if (first_path_cnt >= sec_path_cnt)
+        max_path_cnt = first_path_cnt;
+    else
+        max_path_cnt = sec_path_cnt;
+
+    int min_path_cnt = first_path_cnt + sec_path_cnt - max_path_cnt;
+
+    int start_dif = find_dif_num(first_path, sec_path, min_path_cnt);
+
+    if (start_dif == 0)
+    {
+        printf("this things have nothing in common!\n");
+        return;
+    }
+
+    
+
+    printf("sec word\n");
+    for (int i = 0; i < first_path_cnt; i++)
+        printf("%d ", sec_path[i]);
+
+    printf("\n");
+        
+    char difference[MAX_STR_LEN] = {};
+    //printf("IT SHOULD WORK\n");
+    //printf("start dif %d\n", start_dif);
+    //printf("max cnt %d\n", max_path_cnt);
+
+    sprintf(difference, "%s and %s have some similarities. Here they are:", first_word, sec_word);
+    //printf("%s\n", difference);
+    //printf("dif %p, first path %p, sec_path %p, node %p, num %d\n", difference, first_path, sec_path, the_tree->start_node, num);
+    make_dif_str(difference, first_path, sec_path, the_tree->start_node, num, max_path_cnt, start_dif);
+    printf("%s\n", difference);
+}
+
+size_t find_dif_num(bool* first_path, bool* sec_path, int min_path_cnt)
+{
+    for (int i = 0; i < min_path_cnt; i++)
+    {
+        if (first_path[i] != sec_path[i])
+            return i;
+    }
+
+    return min_path_cnt;
+}
+
+
+char* make_dif_str(char* difference, bool* first_path, bool* sec_path, Node* node, int num, int path_cnt, int start_dif)
+{
+    printf("HERE\n");
+    if (num == path_cnt)
+    {
+        printf("RETURN AT START\n");
+        return difference;
+    }
+        
+
+    char str[MAX_STR_LEN] = {};
+    strncpy(str, node->str, strlen(node->str) - 1);
+    printf("STR %s\n", str);
+    printf("diff %s\n", difference);
+
+    /*printf("ABOUT DIF\n");
+    for (int i = 0; i < start_dif; i++)
+        printf("%d ", first_path[i]);
+
+    printf("\n");
+
+    for (int i = 0; i < start_dif; i++)
+        printf("%d ", sec_path[i]);
+
+    printf("\n");*/
+
+    if(num < start_dif)
+    {
+        if (first_path[num] == sec_path[num])
         {
-            if (strncmp(strs[str_num], str, MAX_STR_LEN) == 0)
+            if (first_path[num])
             {
-                path[step] = str_num;
-                step++;
+                printf("ADD\n");
+                sprintf(difference, "%s %s", difference, str);
+                num++;
+                make_dif_str(difference, first_path, sec_path, node->Right, num, path_cnt, start_dif);
+                return difference;
             }
             else
             {
-                if(way_type == FREE)
-                    way_type = NOT_LEFT;
-                else if(way_type == NOT_LEFT)
-                {
-                    way_type = FREE;
-                    step--;
-                }
+                printf("ADD\n");
+                sprintf(difference, "%s not %s", difference, str);
+                num++;
+                make_dif_str(difference, first_path, sec_path, node->Left, num, path_cnt, start_dif);
+                return difference;
             }
         }
     }
 
-    *node_amt = step;
+    /*if (num >= path_cnt)
+    {
+        printf("RETURN\n");
+        return difference;
+    }*/
+        
 
-    return path;
+    if (num == start_dif)
+    {
+        printf("ADD DIFF\n");
+        sprintf(difference, "%s. And some differences:", difference, str);
+    }
+
+    if(first_path[num])
+    {
+        printf("ADD\n");
+        sprintf(difference, "%s %s", difference, str);
+        num++;
+        make_dif_str(difference, first_path, sec_path, node->Right, num, path_cnt, start_dif);
+    }
+    else
+    {
+        printf("ADD\n");
+        sprintf(difference, "%s not %s", difference, str);
+        num++;
+        make_dif_str(difference, first_path, sec_path, node->Left, num, path_cnt, start_dif);
+    }
+
+    printf("RETURN IN END\n");
+    return difference;
 }
-
-
 /*void find_diff(const char *const str1, const char *const str2)
 {
     assert(str1);

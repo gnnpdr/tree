@@ -2,7 +2,7 @@
 #include "get_database.h"
 
 static Errors count_file_size (const char *const name, size_t* size);
-static void make_tree_node (Node *const node, char** start_text, Tree* the_tree);
+static void read_tree_node (Node* node, char** start_text, Tree* the_tree);
 static char* get_str (char* open, char** start_text);
 
 
@@ -97,10 +97,10 @@ void handle_text (Input* base_text, Tree *const the_tree)
     char* text = base_text->text;
     Node* start_node = the_tree->start_node;
 
-    char address[MAX_STR_LEN] = {};
+    //char address[MAX_STR_LEN] = {};
     char* ch = strchr(text, QUOT_MARK);
 
-    size_t symb_amt = 0;
+    /*size_t symb_amt = 0;
         
     ch++;
     symb_amt = ch - text;
@@ -109,70 +109,61 @@ void handle_text (Input* base_text, Tree *const the_tree)
     *(ch + strlen(address)) = '\0';
 
     start_node->str = text + symb_amt;
-    ch += strlen(address) + 1;
+    ch += strlen(address) + 1;*/
 
-    make_tree_node(start_node, &ch, the_tree);
+    read_tree_node(start_node, &ch, the_tree);
 }
 
-void make_tree_node (Node *const node, char** start_text, Tree* the_tree)
+void read_tree_node (Node* node, char** start_text, Tree* the_tree)  //разбить на функции
 {
-    assert(node);
-
     char* open = strchr(*start_text, OPEN_BRACE);
-    char* close = strchr(*start_text, CLOSE_BRACE);
 
-    if (open == nullptr)
-    {
+    char* str = nullptr;
+
+    if (open == NULL)
         return;
-    }
-        
 
-    char* str;
+    str = get_str (*start_text, start_text);  //лажово, надо поменять, конечно, названия
     
-    if (open < close)
+    int cmp_res = strncmp(str, EMPTY_STR, MAX_STR_LEN);
+
+    if(cmp_res != 0)
     {
-        str = get_str (open, start_text);
-
-        if (node->Left == nullptr)
-        {
-            node->Left = make_node(str);
-            graph_dump (the_tree->start_node, node->Left);
-
-            open = strchr(*start_text, OPEN_BRACE);
-            close = strchr(*start_text, CLOSE_BRACE);
-
-            if(open < close)
-            {
-                make_tree_node(node->Left, start_text, the_tree);
-            }
-        }
+        node->str = str;
+        //printf("STR %s\n", str);
+        //printf("MAKE GRAPH\n");
+        //graph_dump (the_tree->start_node, node);
     }
     else
     {
+        free(node);
         return;
     }
-        
+
+    open = strchr(*start_text, OPEN_BRACE);
+    char* close = strchr(*start_text, CLOSE_BRACE);
+
+    if (open == NULL)
+        return;
+
+    if (open > close)
+        return;
+    
+
+    str = nullptr;
+    //printf("MAKE NODE\n");
+    node->Left = make_node(str);
+    read_tree_node (node->Left, start_text, the_tree);
+
     open = strchr(*start_text, OPEN_BRACE);
     close = strchr(*start_text, CLOSE_BRACE);
 
-    str = get_str (open, start_text);
-
-    if(close < open)
-    {
-        if (node->Right == nullptr )
-        {
-            node->Right = make_node(str);
-            graph_dump (the_tree->start_node, node->Right);
-            open = strchr(*start_text, OPEN_BRACE);
-            close = strchr(*start_text, CLOSE_BRACE);
-
-            if(open < close)
-            {
-                make_tree_node(node->Right, start_text, the_tree);
-            }
-        }
-    }
+    str = nullptr;
     
+    //printf("MAKE RIGHT NODE\n");
+    node->Right = make_node(str);
+    read_tree_node (node->Right, start_text, the_tree);
+
     return;
 }
 

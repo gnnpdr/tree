@@ -2,81 +2,52 @@
 
 #include "user_interaction.h"
 
-static Node* question (Node* node, char* str);
-//static size_t find_free_place (Tree* the_tree);
+static Node* question (Node* node);
 
 void guessing (Tree *const the_tree)
 {
     assert(the_tree);
+    Node* node = the_tree->start_node;
 
-    char** strs = (char**)calloc(the_tree->node_amt, sizeof(char*));
-    for (size_t i = 0; i < the_tree->node_amt; i++)
-        strs[i] = the_tree->database_strs[i].str;
+    while (node->Left && node->Right)
+        node = question(node);
 
-    char* ans_str = (char*)calloc(MAX_STR_LEN, sizeof(char));
-    char* new_str = (char*)calloc(MAX_STR_LEN, sizeof(char));
-
-    char* diff = (char*)calloc(MAX_STR_LEN, sizeof(char));
-
-    bool is_question = true;
-    Node* guess_node = the_tree->start_node;
-    size_t node_cnt = 0;
-
-    while (is_question)
-    {
-        guess_node = question(guess_node, strs[node_cnt]);
-        node_cnt++;
-        is_question = find_question_mark(guess_node->str);
-    }
-
-    printf("did you mean \"%s\"?\n", guess_node->str);
-    scanf ("%s", ans_str);
+    char ans_str[MAX_STR_LEN] = {};
+    
+    printf("did you mean \"%s\"?\n", node->str);   //ошибки
+    fgets(ans_str, MAX_STR_LEN, stdin);
     
     if (strncmp(ans_str, YES, MAX_STR_LEN) == 0)
-        printf("Yep! I knew it hehe\n");
-    else
     {
-        printf("I despair of you, son\n");
-        
-        size_t free_place = the_tree->node_amt;
-
-        guess_node->Left = create_node(guess_node->str);
-        the_tree->database_strs[free_place].str = guess_node->str; 
-        the_tree->database_strs[free_place].node_address = guess_node->Left;
-
-        printf("what did you mean then?? I ll memorize it\n");
-        scanf("%s", ans_str);
-        strncpy(new_str, ans_str, MAX_STR_LEN);
-
-        guess_node->Right = create_node(new_str);  //надо было заполнить базу данных, а не создавать новые узлы?
-        the_tree->database_strs[free_place + 1].str = new_str;
-        the_tree->database_strs[free_place + 1].node_address = guess_node->Right;
-
-        printf("what is the difference?\n");
-        scanf("%s", ans_str);
-
-        strncpy(diff, ans_str, MAX_STR_LEN);
-        printf("%s\n", diff);
-        
-        sprintf(diff, "%s%c", diff, QUESTION_MARK);
-        guess_node->str = diff;
-
-        the_tree->database_strs[free_place - 1].str = diff;
-
-        the_tree->node_amt += 2;
+        printf("Yep! I knew it hehe\n");
+        return;
     }
+    
+    printf("I despair of you, son\n");
 
+    char* new_str = (char*)calloc(MAX_STR_LEN, sizeof(char));  //надо проверки сделать
+    char* diff = (char*)calloc(MAX_STR_LEN, sizeof(char));
+
+    node->Left = make_node(node->str);
+
+    printf("what did you mean then?? I ll memorize it\n");
+    fgets(new_str, MAX_STR_LEN, stdin);
+    node->Right = make_node(new_str); 
+
+    printf("what is the difference?\n");
+    fgets(diff, MAX_STR_LEN, stdin);
+    
+    sprintf(diff, "%s%c", diff, QUESTION_MARK);
+    node->str = diff;
 
     free(new_str);
-    free(ans_str);
     free(diff);
-    free(strs);
 }
 
-Node* question (Node* node, char* str)
+Node* question (Node* node)
 {
+    printf("%s\n", node->str);
     char ans_str[MAX_STR_LEN] = {};
-    printf("is that %s\n", str);
 
     scanf("%s", ans_str);
     if (strncmp(ans_str, YES, MAX_STR_LEN) == 0)
@@ -86,7 +57,7 @@ Node* question (Node* node, char* str)
 }
 
 
-Node* find_node (const char *const str, Tree* the_tree)
+/*Node* find_node (const char *const str, Tree* the_tree)
 {
     assert(str);
     assert(the_tree);
@@ -102,4 +73,4 @@ Node* find_node (const char *const str, Tree* the_tree)
     
 
     return nullptr;
-}
+}*/

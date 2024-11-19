@@ -1,12 +1,10 @@
 #include <stdio.h>
 
-
 #include "tree_structure.h"
 #include "draw_tree.h"
 #include "get_database.h"
-
-//#include "tree_functions.h"
-//#include "user_interaction.h"
+#include "user_interaction.h"
+#include "tree_functions.h"
 
 int main (int argc, char** argv)
 {
@@ -22,16 +20,16 @@ int main (int argc, char** argv)
 
     Tree the_tree = {};
     tree_ctor (&the_tree, &start_node);
-    //printf("HERE\n");
     handle_text (&base_text, &the_tree);
-    //printf("NOW\n");
 
-    //database_tree_fill(&the_tree, &base_text);
+    printf("ALL_RIGHT\n");
+    graph_dump (the_tree.start_node, the_tree.start_node);
 
     //make_definition (&the_tree);
+    find_difference(&the_tree);
     //guessing (&the_tree);
 
-    //graph_dump (the_tree.start_node, the_tree.start_node);
+    
 
     input_dtor(&base_text);
     tree_dtor(&the_tree);

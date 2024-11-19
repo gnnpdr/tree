@@ -1,7 +1,9 @@
 #ifndef _USER_H_
 #define _USER_H_
 
-#include "tree_functions.h"
+#include "get_database.h"
+
+static const char QUESTION_MARK = '?';
 
 void guessing (Tree *const the_tree);
 

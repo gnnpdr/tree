@@ -9,6 +9,8 @@ static const char QUOT_MARK = '"';
 static const char OPEN_BRACE = '{';
 static const char CLOSE_BRACE = '}';
 
+static const char* EMPTY_STR = "";
+
 static const size_t MAX_STRS_AMT  =  50;
 
 static const size_t MAX_FILE_SIZE = 3000;

@@ -11,7 +11,7 @@
 
 static const size_t ONE_NODE =  1;
 
-static const size_t MAX_STR_LEN =  50;
+static const size_t MAX_STR_LEN =  100;
 
 struct Node 
 {
@@ -19,29 +19,18 @@ struct Node
 
     Node* Right;
     Node* Left;
-
-    //bool is_filled;
 };
 
-/*struct NodeParameters 
-{
-    char* str;
-    Node* node_address; 
-};*/
 
 struct Tree //структура дерева с корневым узлом
 {
-    //NodeParameters database_strs[MAX_STRS_AMT];  //по-другому можно. Лучше убрать
-    //size_t node_amt;
-
-    Node* start_node;  //вот и вопрос. узел лучше, наверное, заранее инициализировать
+    Node* start_node;
 };
-
 
 Errors node_ctor (Node *const node);
 Errors tree_ctor (Tree *const the_tree, Node *const start_node);
 
-Node* make_node (char* str);  //make
+Node* make_node (char* str);
 
 void tree_dtor(Tree* the_tree);
 
